@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1713CAC41F8773CC00603612 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 1713CAC31F8773CC00603612 /* main.c */; };
+		1713CAD11F87865E00603612 /* UnitConversionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1713CAD01F87865E00603612 /* UnitConversionTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,10 +26,20 @@
 /* Begin PBXFileReference section */
 		1713CAC01F8773CC00603612 /* dBconversion */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dBconversion; sourceTree = BUILT_PRODUCTS_DIR; };
 		1713CAC31F8773CC00603612 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		1713CACE1F87865E00603612 /* UnitConversionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitConversionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1713CAD01F87865E00603612 /* UnitConversionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UnitConversionTests.m; sourceTree = "<group>"; };
+		1713CAD21F87865E00603612 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		1713CABD1F8773CC00603612 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1713CACB1F87865E00603612 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -42,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				1713CAC21F8773CC00603612 /* dBconversion */,
+				1713CACF1F87865E00603612 /* UnitConversionTests */,
 				1713CAC11F8773CC00603612 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,6 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				1713CAC01F8773CC00603612 /* dBconversion */,
+				1713CACE1F87865E00603612 /* UnitConversionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,6 +73,15 @@
 				1713CAC31F8773CC00603612 /* main.c */,
 			);
 			path = dBconversion;
+			sourceTree = "<group>";
+		};
+		1713CACF1F87865E00603612 /* UnitConversionTests */ = {
+			isa = PBXGroup;
+			children = (
+				1713CAD01F87865E00603612 /* UnitConversionTests.m */,
+				1713CAD21F87865E00603612 /* Info.plist */,
+			);
+			path = UnitConversionTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -82,6 +104,23 @@
 			productReference = 1713CAC01F8773CC00603612 /* dBconversion */;
 			productType = "com.apple.product-type.tool";
 		};
+		1713CACD1F87865E00603612 /* UnitConversionTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1713CAD31F87865E00603612 /* Build configuration list for PBXNativeTarget "UnitConversionTests" */;
+			buildPhases = (
+				1713CACA1F87865E00603612 /* Sources */,
+				1713CACB1F87865E00603612 /* Frameworks */,
+				1713CACC1F87865E00603612 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UnitConversionTests;
+			productName = UnitConversionTests;
+			productReference = 1713CACE1F87865E00603612 /* UnitConversionTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -92,6 +131,10 @@
 				ORGANIZATIONNAME = "Olly Seber";
 				TargetAttributes = {
 					1713CABF1F8773CC00603612 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+					1713CACD1F87865E00603612 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
 					};
@@ -110,9 +153,20 @@
 			projectRoot = "";
 			targets = (
 				1713CABF1F8773CC00603612 /* dBconversion */,
+				1713CACD1F87865E00603612 /* UnitConversionTests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1713CACC1F87865E00603612 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1713CABC1F8773CC00603612 /* Sources */ = {
@@ -120,6 +174,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1713CAC41F8773CC00603612 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1713CACA1F87865E00603612 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1713CAD11F87865E00603612 /* UnitConversionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,6 +291,28 @@
 			};
 			name = Release;
 		};
+		1713CAD41F87865E00603612 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = UnitConversionTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ollyseber.UnitConversionTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1713CAD51F87865E00603612 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = UnitConversionTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ollyseber.UnitConversionTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -246,6 +330,14 @@
 			buildConfigurations = (
 				1713CAC81F8773CC00603612 /* Debug */,
 				1713CAC91F8773CC00603612 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		1713CAD31F87865E00603612 /* Build configuration list for PBXNativeTarget "UnitConversionTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1713CAD41F87865E00603612 /* Debug */,
+				1713CAD51F87865E00603612 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

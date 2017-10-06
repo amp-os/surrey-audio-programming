@@ -10,6 +10,7 @@
 #include <math.h> // For pow()
 #include <stdlib.h> // For atoi()
 
+public:
 int main(int argc, const char * argv[]) {
     if(argc < 2){
         printf("No argument supplied! I die gracefully.\n");
