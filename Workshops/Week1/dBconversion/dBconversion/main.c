@@ -10,7 +10,6 @@
 #include <math.h> // For pow()
 #include <stdlib.h> // For atoi()
 
-public:
 int main(int argc, const char * argv[]) {
     if(argc < 2){
         printf("No argument supplied! I die gracefully.\n");
@@ -23,4 +22,9 @@ int main(int argc, const char * argv[]) {
     printf("%idB gain = %f linear gain\nThis is %.0f%%\nThe dB value is stored at %p, the linear gain at %p, and the percentage is an rvalue.\n", dB, gain, gain*100, &dB, &gain);
     
     return 0;
+}
+
+int firstTest(const int a)
+{
+    return a + 1;
 }
