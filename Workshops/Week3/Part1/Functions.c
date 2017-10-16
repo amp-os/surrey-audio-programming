@@ -79,7 +79,7 @@ double frequencyToMidi(double frequency)
 
 void printComparison(double frequency1, double frequency2)
 {
-	printf("The first note is %f semitones higher than the second\n", frequencyToMidi(frequency1) - frequencyToMidi(frequency2));
+	printf("The first note is %f semitones higher than the second\n", (frequencyToMidi(frequency1) - frequencyToMidi(frequency2)));
 }
 
 double closest(double target, double contestant1, double contestant2)
