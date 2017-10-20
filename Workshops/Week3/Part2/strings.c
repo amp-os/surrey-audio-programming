@@ -27,6 +27,17 @@ int main(int argc, char *argv[]) {
 	
 	printf("%s\n", fullName);
 	
+	if(getName("Enter your full name: ", fullName, strLength*2 + 1) != 0) {
+		printf("Invalid input.\n");
+		return 1;
+	}
+	
+	char *tokenBreaker = " ";
+	char *firstNameptr = strtok(fullName, tokenBreaker);
+	char *lastNameptr = strtok(NULL, tokenBreaker);
+	
+	printf("%s %s\n", firstNameptr, lastNameptr);
+	
 	return 0;
 }
 
