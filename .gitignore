@@ -1,1 +1,9 @@
 .DS_Store
+*.dSYM/
+*.bz2
+/Workshops/Week1/HelloWorld/Build/
+*.xcodeproj/
+/Workshops/Week2/Part1/MajorArrays
+/Workshops/Week2/Part2/ControlFlow
+/Workshops/Week3/Part1/Functions
+*
