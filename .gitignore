@@ -7,3 +7,5 @@
 /Workshops/Week2/Part2/ControlFlow
 /Workshops/Week3/Part1/Functions
 *
+!*.c
+!makefile
