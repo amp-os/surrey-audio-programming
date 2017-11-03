@@ -32,7 +32,7 @@ int main( int argc, char *argv[] ) {
     if ( outputArray == NULL )
         return 2;
     
-    printSquareWave( 3.5, sampleFrequency, outputArray, argv[ 2 ] );
+    printSquareWave( 350, sampleFrequency, outputArray, argv[ 2 ] );
     
     printf( "File %s was closed successfully!\n", argv[ 2 ] );
     free( outputArray );
