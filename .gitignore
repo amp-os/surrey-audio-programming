@@ -9,3 +9,7 @@
 *
 !*.c
 !makefileOther/C/valgrind-3.13.0.tar.bz2
+Other/C/valgrind-3.13.0/*
+largestFiles.py
+largestfiles.sh
+
