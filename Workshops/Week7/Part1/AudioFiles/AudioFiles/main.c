@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <sndfile.h>
+#include <stdlib.h>
 
 int main(int argc, const char * argv[]) {
     
@@ -18,21 +19,27 @@ int main(int argc, const char * argv[]) {
     outputInfo = inputInfo;
     outputWav = sf_open(argv[2], SFM_WRITE, &outputInfo);
     
+    printf("Enter a delay time in ms: ");
+    int userInput;
+    scanf("%i", &userInput);
+    
     const int bufferSize = 128;
-    const int delaySize = 100 + 1;
+    int delaySize = (userInput * inputInfo.samplerate / 1000) + 1;
     
     double buffer[ bufferSize ] = {0};
-    double delayline[ delaySize ] = {0};
+    double *delayline = calloc(bufferSize, sizeof(double));
     
     sf_count_t count;
+    int delayIndex = 0;
     
     do {
         
         count = sf_read_double(inputWav, buffer, bufferSize/inputInfo.channels);
         
         for ( int i = 0; i < count; ++i ) {
-            delayline[ i % delaySize ] = buffer[ i ] / (double) 2;
-            buffer[ i ] += delayline[ ( i + 1 ) % delaySize ];
+            delayline[ delayIndex ] = buffer[ i ] / (double) 2;
+            buffer[ i ] += delayline[ delayIndex + 1 ];
+            delayIndex = ( delayIndex + 1 ) % delaySize;
         }
         
         sf_write_double(outputWav, buffer, count);
@@ -42,6 +49,7 @@ int main(int argc, const char * argv[]) {
     
     sf_close(inputWav);
     sf_close(outputWav);
+    free(delayline);
     
     return 0;
 }
