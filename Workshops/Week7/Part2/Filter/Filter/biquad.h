@@ -1,13 +1,12 @@
-//
-//  biquad.h
-//  Filter
-//
-//  Created by Olly Seber on 16/11/2017.
-//  Copyright © 2017 Olly Seber. All rights reserved.
-//
-
 #ifndef biquad_h
 #define biquad_h
 
+typedef struct biquad_struct biquad;
 
-#endif /* biquad_h */
+biquad* createBiquad( void );
+void destroyBiquad( biquad *filter );
+
+void setCoefficients( biquad *filter, float b0, float b1, float b2, float a0, float a1, float a2 );
+void printBiquad( biquad *filter );
+
+#endif
