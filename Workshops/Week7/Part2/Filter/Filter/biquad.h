@@ -9,4 +9,7 @@ void destroyBiquad( biquad *filter );
 void setCoefficients( biquad *filter, float b0, float b1, float b2, float a0, float a1, float a2 );
 void printBiquad( biquad *filter );
 
+double calculateResponse( biquad *filter, double frequency, int samplerate );
+double calculatePhase(biquad *filter, double frequency, int samplerate );
+
 #endif
