@@ -3,21 +3,26 @@
 
 int main( int argc, char *argv[] ) {
     
-    buffer *buffer = createBuffer( 5 );
+    const int sizeOfBuffer = 4;
+    const int numberSteps = 3;
     
-    double *ptr = getWritePosition( buffer, 3 );
+    buffer *buffer = createBuffer( sizeOfBuffer );
     
-    for ( int i = 0; i < 3; ++i ) {
-        *( ptr + i ) = i;
+    for ( int i = 0; i < numberSteps; ++i ) {
+        writeItem( buffer, i + 1 );
     }
     
-    printBuffer( buffer );
+    /* Error is caused if write head catches up to read head.
+     * Therefore need to read some data to make enough space. */
     
-    ptr = getWritePosition( buffer, 3 );
+    int clearspace = ( 2 * numberSteps ) - sizeOfBuffer;
+    while ( clearspace-- >= 0 ) {
+        double temporary;
+        readItem(buffer, &temporary);
+    }
     
-    for ( int i = 0; i < 3; ++i ) {
-        *( ptr + i ) = i + 3 ;
-        // Doesn't work yet as keeps writing on. Need some way of writing in cycle.
+    for ( int i = 0; i < numberSteps; ++i ) {
+        writeItem( buffer, i + numberSteps );
     }
     
     printBuffer( buffer );
