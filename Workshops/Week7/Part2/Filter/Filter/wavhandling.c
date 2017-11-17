@@ -8,11 +8,24 @@ typedef struct wave_structure {
 } wav;
 
 
-wav *openWav( char *filename, int mode ) {
+wav *openWavRead( char *filename ) {
     wav *file = calloc( 1, sizeof( wav ) );
     assert( file );
     
-    file->audioFile = sf_open( filename, mode, &file->infoFile );
+    file->audioFile = sf_open( filename, SFM_READ, &file->infoFile );
+    
+    return file;
+}
+
+
+
+wav *openWavWrite( char *filename, wav *filterSettings ) {
+    wav *file = calloc( 1, sizeof( wav ) );
+    assert( file );
+    
+    file->infoFile = filterSettings->infoFile;
+    
+    file->audioFile = sf_open( filename, SFM_WRITE, &file->infoFile );
     
     return file;
 }

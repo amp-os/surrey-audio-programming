@@ -5,7 +5,8 @@
 
 typedef struct wave_structure wav;
 
-wav *openWav( char *filename, int mode );
+wav *openWavRead( char *filename );
+wav *openWavWrite( char *filename, wav *filterSettings );
 void closeWav( wav *file );
 
 int getSampleRate( wav *file );

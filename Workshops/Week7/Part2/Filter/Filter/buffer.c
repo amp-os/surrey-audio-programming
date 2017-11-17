@@ -53,6 +53,8 @@ int writeItem( buffer *buf, double item ) {
 
 int readItem( buffer *buf, double *item ) {
     assert( buf );
+    assert( item );
+    
     if ( buf->readIndex == buf->writeIndex ) {
         return -1;
     }

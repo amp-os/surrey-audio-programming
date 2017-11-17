@@ -12,4 +12,13 @@ void printBiquad( biquad *filter );
 double calculateResponse( biquad *filter, double frequency, int samplerate );
 double calculatePhase(biquad *filter, double frequency, int samplerate );
 
+double getb0( biquad *filter );
+double getb1( biquad *filter );
+double getb2( biquad *filter );
+double geta0( biquad *filter );
+double geta1( biquad *filter );
+double geta2( biquad *filter );
+
+void printResponse( biquad *filter, int *frequencies, int count, int samplerate );
+
 #endif

@@ -43,6 +43,36 @@ void setCoefficients( biquad *filter, float b0, float b1, float b2, float a0, fl
 }
 
 
+double getb0( biquad *filter ) {
+    return filter->b0;
+}
+
+
+double getb1( biquad *filter ) {
+    return filter->b1;
+}
+
+
+double getb2( biquad *filter ) {
+    return filter->b2;
+}
+
+
+double geta0( biquad *filter ) {
+    return filter->a0;
+}
+
+
+double geta1( biquad *filter ) {
+    return filter->a1;
+}
+
+
+double geta2( biquad *filter ) {
+    return filter->a2;
+}
+
+
 void printBiquad( biquad *filter ) {
     printf( "b0:\t%f\nb1:\t%f\nb2:\t%f\na0:\t%f\na1:\t%f\na2:\t%f\n",
            filter->b0, filter->b1, filter->b2, filter->a0, filter->a1, filter->a2 );
@@ -82,4 +112,12 @@ double complex addCoefficients( float *c0, double complex z ) {
     for ( int i = 0; i < 3; ++i )
         sum += *( c0 + i ) * cpow( z, -1.0 * i );
     return sum;
+}
+
+
+void printResponse( biquad *filter, int *frequencies, int count, int samplerate ) {
+    printf( "Frequency\tGain\tPhase\n" );
+    for ( int i = 0; i < count; ++i ) {
+        printf( "%d\t\t%f\t%f\n", frequencies[ i ], calculateResponse( filter, frequencies[ i ], samplerate ), calculatePhase( filter, frequencies[ i ], samplerate ) );
+    }
 }
