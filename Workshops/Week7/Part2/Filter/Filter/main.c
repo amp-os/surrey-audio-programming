@@ -21,29 +21,27 @@ int main( int argc, char *argv[] ) {
     
     sf_count_t count = 0;
     
-    int outputBufferIndex = 0, delay1Index = 0, delay2Index = 0;
-    
     do {
         
         count = readWavDouble( inputFile, inputBuffer, bufferSize );
         
+        static int o = 0; // offset used as bufferSize % delaySize != 0, so each loop through the buffer will give an error in the delay index
+        
         for ( int i = 0; i < count; ++i ) {
             
-            delay1[ delay1Index ] = inputBuffer[ i ];
+            delay1[ ( i + o ) % delaySize ] = inputBuffer[ i ];
             
-            outputBuffer[ outputBufferIndex ] = inputBuffer[ i ];
-            outputBuffer[ outputBufferIndex ] += getb1(filter) * delay1[ ( delay1Index + delaySize - 1 ) % delaySize ];
-            outputBuffer[ outputBufferIndex ] += getb2(filter) * delay1[ ( delay1Index + delaySize - 2 ) % delaySize ];
+            outputBuffer[ i ] = inputBuffer[ i ];
+            outputBuffer[ i ] += getb1(filter) * delay1[ ( i + o + delaySize - 1 ) % delaySize ];
+            outputBuffer[ i ] += getb2(filter) * delay1[ ( i + o + delaySize - 2 ) % delaySize ];
             
-            outputBuffer[ outputBufferIndex ] -= geta1(filter) * delay2[ ( delay2Index + delaySize - 1 ) % delaySize ];
-            outputBuffer[ outputBufferIndex ] -= geta2(filter) * delay2[ ( delay2Index + delaySize - 2 ) % delaySize ];
+            outputBuffer[ i ] -= geta1(filter) * delay2[ ( i + o + delaySize - 1 ) % delaySize ];
+            outputBuffer[ i ] -= geta2(filter) * delay2[ ( i + o + delaySize - 2 ) % delaySize ];
             
-            delay2[ delay2Index ] = outputBuffer[ i ];
-            
-            outputBufferIndex = ( outputBufferIndex + 1 ) % bufferSize;
-            delay1Index = ( delay1Index + 1 ) % delaySize;
-            delay2Index = ( delay2Index + 1 ) % delaySize;
+            delay2[ ( i + o ) % delaySize ] = outputBuffer[ i ];
         }
+        
+        o = o + ( count % delaySize );
         
         writeWavDouble( outputFile, outputBuffer, count );
         
