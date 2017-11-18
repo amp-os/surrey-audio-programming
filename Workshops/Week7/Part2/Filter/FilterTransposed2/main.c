@@ -6,6 +6,7 @@ int main( int argc, char *argv[] ) {
     
     wav *inputFile = openWavRead( "noise.wav" );
     wav *outputFile = openWavWrite( "filtered3.wav", inputFile );
+    FILE *test = fopen( "test3.txt", "w" );
     
     biquad *filter = createBiquad();
     
@@ -14,8 +15,7 @@ int main( int argc, char *argv[] ) {
     const int bufferSize = 128;
     const int delaySize = 2;
     
-    double inputBuffer[ bufferSize ] = {0},
-    outputBuffer[ bufferSize ] = {0},
+    double buffer[ bufferSize ] = {0},
     delay1[ delaySize ] = {0},
     delay2[ delaySize ] = {0};
     
@@ -25,19 +25,27 @@ int main( int argc, char *argv[] ) {
     
     do {
         
-        count = readWavDouble( inputFile, inputBuffer, bufferSize );
+        count = readWavDouble( inputFile, buffer, bufferSize );
         
         for ( int i = 0; i < count; ++i, ++j ) {
             
-            outputBuffer[ i ] = getb0( filter ) * inputBuffer[ i ] + delay1[ ( j - 1 ) % delaySize ];
+            delay1[ j % delaySize ] = delay2 [ ( j - 1 ) % delaySize ] + getb1( filter ) * buffer[ i ];
             
-            delay2[ j % delaySize ] = getb2( filter ) * inputBuffer[ i ] - geta2( filter ) * outputBuffer[ i ];
+            delay2[ j % delaySize ] = getb2( filter ) * buffer[ i ];
             
-            delay1[ j % delaySize ] = delay2 [ ( j - 1 ) % delaySize ] + getb1( filter ) * inputBuffer[ i ] - geta1( filter ) * outputBuffer[ i ];
+            buffer[ i ] = getb0( filter ) * buffer[ i ] + delay1[ ( j - 1 ) % delaySize ];
+            
+            delay1[ j % delaySize ] -= geta1( filter ) * buffer[ i ];
+            
+            delay2[ j % delaySize ] -= geta2( filter ) * buffer[ i ];
             
         }
         
-        writeWavDouble( outputFile, outputBuffer, count );
+        writeWavDouble( outputFile, buffer, count );
+        
+        for ( int i = 0; i < count; ++i ) {
+            fprintf( test, "%f\n", buffer[ i ] );
+        }
         
         j = ( j % delaySize ) + delaySize;
         
@@ -45,6 +53,7 @@ int main( int argc, char *argv[] ) {
     
     closeWav( inputFile );
     closeWav( outputFile );
+    fclose( test );
     
     int frequencies[ 10 ] = { 50, 100, 200, 400, 1280, 2000, 5000, 8000, 10000, 15000 };
     

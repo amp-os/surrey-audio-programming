@@ -6,6 +6,7 @@ int main( int argc, char *argv[] ) {
     
     wav *inputFile = openWavRead( "noise.wav" );
     wav *outputFile = openWavWrite( "filtered2.wav", inputFile );
+    FILE *test = fopen( "test2.txt", "w" );
     
     biquad *filter = createBiquad();
     
@@ -14,8 +15,7 @@ int main( int argc, char *argv[] ) {
     const int bufferSize = 128;
     const int delaySize = 3;
     
-    double inputBuffer[ bufferSize ] = {0},
-    outputBuffer[ bufferSize ] = {0},
+    double buffer[ bufferSize ] = {0},
     delay[ delaySize ] = {0};
     
     sf_count_t count = 0;
@@ -24,17 +24,21 @@ int main( int argc, char *argv[] ) {
     
     do {
         
-        count = readWavDouble( inputFile, inputBuffer, bufferSize );
+        count = readWavDouble( inputFile, buffer, bufferSize );
         
         for ( int i = 0; i < count; ++i, ++j ) {
             
-            delay[ j % delaySize ] = inputBuffer[ i ] - ( geta1( filter ) * delay[ ( j - 1 ) % delaySize ] ) - ( geta2( filter ) * delay[ ( j - 2 ) % delaySize ] );
+            delay[ j % delaySize ] = buffer[ i ] - ( geta1( filter ) * delay[ ( j - 1 ) % delaySize ] ) - ( geta2( filter ) * delay[ ( j - 2 ) % delaySize ] );
             
-            outputBuffer[ i ] = ( getb0( filter ) * delay[ j % delaySize ] ) + ( getb1( filter ) * delay[ ( j - 1 ) % delaySize ] ) + ( getb2( filter ) * delay[ ( j - 2 ) % delaySize ] );
+            buffer[ i ] = ( getb0( filter ) * delay[ j % delaySize ] ) + ( getb1( filter ) * delay[ ( j - 1 ) % delaySize ] ) + ( getb2( filter ) * delay[ ( j - 2 ) % delaySize ] );
             
         }
         
-        writeWavDouble( outputFile, outputBuffer, count );
+        writeWavDouble( outputFile, buffer, count );
+        
+        for ( int i = 0; i < count; ++i ) {
+            fprintf( test, "%f\n", buffer[ i ] );
+        }
         
         j = ( j % delaySize ) + delaySize;
         
@@ -42,6 +46,7 @@ int main( int argc, char *argv[] ) {
     
     closeWav( inputFile );
     closeWav( outputFile );
+    fclose( test );
     
     int frequencies[ 10 ] = { 50, 100, 200, 400, 1280, 2000, 5000, 8000, 10000, 15000 };
     
