@@ -5,18 +5,19 @@
 int main( int argc, char *argv[] ) {
     
     wav *inputFile = openWavRead( "noise.wav" );
-    wav *outputFile = openWavWrite( "filtered2.wav", inputFile );
+    wav *outputFile = openWavWrite( "filtered3.wav", inputFile );
     
     biquad *filter = createBiquad();
     
     setCoefficients( filter, 1, -2, 1, 1, -0.2, 0.17 );
     
     const int bufferSize = 128;
-    const int delaySize = 3;
+    const int delaySize = 2;
     
     double inputBuffer[ bufferSize ] = {0},
     outputBuffer[ bufferSize ] = {0},
-    delay[ delaySize ] = {0};
+    delay1[ delaySize ] = {0},
+    delay2[ delaySize ] = {0};
     
     sf_count_t count = 0;
     
@@ -28,9 +29,11 @@ int main( int argc, char *argv[] ) {
         
         for ( int i = 0; i < count; ++i, ++j ) {
             
-            delay[ j % delaySize ] = inputBuffer[ i ] - ( geta1( filter ) * delay[ ( j - 1 ) % delaySize ] ) - ( geta2( filter ) * delay[ ( j - 2 ) % delaySize ] );
+            outputBuffer[ i ] = getb0( filter ) * inputBuffer[ i ] + delay1[ ( j - 1 ) % delaySize ];
             
-            outputBuffer[ i ] = ( getb0( filter ) * delay[ j % delaySize ] ) + ( getb1( filter ) * delay[ ( j - 1 ) % delaySize ] ) + ( getb2( filter ) * delay[ ( j - 2 ) % delaySize ] );
+            delay2[ j % delaySize ] = getb2( filter ) * inputBuffer[ i ] - geta2( filter ) * outputBuffer[ i ];
+            
+            delay1[ j % delaySize ] = delay2 [ ( j - 1 ) % delaySize ] + getb1( filter ) * inputBuffer[ i ] - geta1( filter ) * outputBuffer[ i ];
             
         }
         
