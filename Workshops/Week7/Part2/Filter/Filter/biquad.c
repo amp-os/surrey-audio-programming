@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <complex.h>
 #include "constants.h"
+#include <math.h>
 
 typedef struct biquad_struct {
     float b0;
@@ -86,7 +87,7 @@ double calculateResponse( biquad *filter, double frequency, int samplerate ) {
     
     H = addCoefficients( &( filter->b0 ), z ) / addCoefficients( &( filter->a0 ), z );
     
-    return cabs( H );
+    return 20 * log10( cabs( H ) );
 }
 
 
@@ -116,8 +117,8 @@ double complex addCoefficients( float *c0, double complex z ) {
 
 
 void printResponse( biquad *filter, int *frequencies, int count, int samplerate ) {
-    printf( "Frequency\tGain\tPhase\n" );
+    printf( "Frequency (Hz)\tGain (dB)\tPhase (deg)\n" );
     for ( int i = 0; i < count; ++i ) {
-        printf( "%d\t\t%f\t%f\n", frequencies[ i ], calculateResponse( filter, frequencies[ i ], samplerate ), calculatePhase( filter, frequencies[ i ], samplerate ) );
+        printf( "%.5d\t\t\t%.2f\t\t%.2f\n", frequencies[ i ], calculateResponse( filter, frequencies[ i ], samplerate ), calculatePhase( filter, frequencies[ i ], samplerate ) );
     }
 }

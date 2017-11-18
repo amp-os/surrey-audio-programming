@@ -52,7 +52,7 @@ int main( int argc, char *argv[] ) {
     closeWav( inputFile );
     closeWav( outputFile );
     
-    int frequencies[ 10 ] = { 20, 80, 320, 640, 1280, 2000, 5000, 8000, 10000, 15000 };
+    int frequencies[ 10 ] = { 50, 100, 200, 400, 1280, 2000, 5000, 8000, 10000, 15000 };
     
     printResponse( filter, frequencies, 10, 48000 );
     
