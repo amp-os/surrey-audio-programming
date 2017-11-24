@@ -10,6 +10,25 @@
 #include <sndfile.h>
 #include <portaudio.h>
 #include <stdlib.h>
+#include <math.h>
+
+double movingAverage( float sample ) {
+    const int window = 100;
+    static float buffer[ window ] = {0.5};
+    static int count = 0;
+    float total = 0;
+    
+    
+    buffer[ count ] = fabs( sample );
+    
+    for ( int i = 0; i < window; ++i ) {
+        total += buffer[ i ];
+    }
+    
+    count = ( count + 1 ) % window;
+    
+    return total / window;
+}
 
 int main(int argc, const char * argv[]) {
     
@@ -38,8 +57,9 @@ int main(int argc, const char * argv[]) {
     }
     
     const int delaySize = 20000 * inputInfo.channels;
-    float buffer[ bufferSize ];
+    float buffer[ bufferSize ] = {0};
     float *delay = calloc( delaySize + inputInfo.channels, sizeof( float ) );
+    float feedback = 0.7;
     
     sf_count_t count;
     
@@ -57,7 +77,7 @@ int main(int argc, const char * argv[]) {
         count = sf_read_float( inputFile, buffer, bufferSize );
         
         for ( int i = 0; i < count; ++i ) {
-            delay[ delayIndex ] = buffer[ i ];
+            delay[ delayIndex ] = buffer[ i ] + feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
             buffer[ i ] += delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
             delayIndex = ( delayIndex + 1 ) % delaySize;
         }
@@ -72,24 +92,51 @@ int main(int argc, const char * argv[]) {
         
     } while ( count != 0 );
     
+    float avg = 0;
     
-    /* Flush delay */
-    for ( int i = 0; i < delaySize; ++i ) {
-        buffer[ i % bufferSize ] = delay[ delayIndex + 1 ];
-        delayIndex = ( delayIndex + 1 ) % delaySize;
+    do {
         
-        if ( i % bufferSize == 0 ) {
-            if ( Pa_WriteStream( stream, buffer, ( i % bufferSize ) / inputInfo.channels ) != paNoError ) {
-                printf( "Issue streaming end of delay!\n" );
-                Pa_StopStream( stream );
-                Pa_CloseStream( stream );
-                Pa_Terminate();
-                return 5;
-            }
-        }
+        for ( int i = 0; i < delaySize; ++i ){
+        
+            buffer[ i % bufferSize ] = delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
             
-        
-    }
+            if ( i % bufferSize == 0 ) {
+                if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
+                    printf( "Issue streaming end of delay!\n" );
+                    Pa_StopStream( stream );
+                    Pa_CloseStream( stream );
+                    Pa_Terminate();
+                    return 5;
+                }
+            }
+            
+            avg = movingAverage( delay[ i ] );
+            delay[ delayIndex ] = feedback * delay[ delayIndex ];
+            delayIndex = ( delayIndex + 1 ) % delaySize;
+        }
+    } while ( avg > 0.00001 );
+    
+    
+    
+    
+    
+//    /* Flush delay */
+//    for ( int i = 0; i < delaySize; ++i ) {
+//        buffer[ i % bufferSize ] = delay[ delayIndex + 1 ];
+//        delayIndex = ( delayIndex + 1 ) % delaySize;
+//        
+//        if ( i % bufferSize == 0 ) {
+//            if ( Pa_WriteStream( stream, buffer, ( i % bufferSize ) / inputInfo.channels ) != paNoError ) {
+//                printf( "Issue streaming end of delay!\n" );
+//                Pa_StopStream( stream );
+//                Pa_CloseStream( stream );
+//                Pa_Terminate();
+//                return 5;
+//            }
+//        }
+//            
+//        
+//    }
     
     free( delay );
     
