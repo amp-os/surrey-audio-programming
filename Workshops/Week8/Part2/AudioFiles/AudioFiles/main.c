@@ -17,7 +17,7 @@ double average( float *buffer, int count ) {
     for (int i = 0; i < count; ++i ){
         total += fabs( buffer[ i ] );
     }
-    return (double) total / count;
+    return total / (double) count;
 }
 
 int main(int argc, const char * argv[]) {
@@ -46,10 +46,10 @@ int main(int argc, const char * argv[]) {
         return 3;
     }
     
-    const int delaySize = 20000 * inputInfo.channels;
+    const int delaySize = 20000 * inputInfo.channels + inputInfo.channels;
     float buffer[ bufferSize ] = {0};
-    float *delay = calloc( delaySize + inputInfo.channels, sizeof( float ) );
-    float feedback = 0.7;
+    float *delay = calloc( delaySize, sizeof( float ) );
+    float feedback = 0.8;
     
     sf_count_t count;
     
@@ -65,42 +65,61 @@ int main(int argc, const char * argv[]) {
     do {
         
         count = sf_read_float( inputFile, buffer, bufferSize );
+
         
-        for ( int i = 0; i < count; ++i ) {
-            delay[ delayIndex ] = buffer[ i ] + feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-            buffer[ i ] += delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-            delayIndex = ( delayIndex + 1 ) % delaySize;
-        }
-        
-        if ( Pa_WriteStream( stream, buffer, count / inputInfo.channels ) != paNoError ) {
-            printf( "Issue streaming data!\n" );
-            Pa_StopStream( stream );
-            Pa_CloseStream( stream );
-            Pa_Terminate();
-            return 5;
-        }
-        
-    } while ( count != 0 );
-    
-    do {
-        
-        for ( int i = 0; i < bufferSize; ++i ){
-        
-            buffer[ i ] = delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-            delay[ delayIndex ] = feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-            delayIndex = ( delayIndex + 1 ) % delaySize;
+        for (int i = 0; i < bufferSize; i++)
+        {
+            if (count != bufferSize && i >= count)
+            {
+                buffer[i] = 0;
+            }
             
+            delay[delayIndex % delaySize] = buffer[i] + delay[(delayIndex + 1) % delaySize] * 0.8;
+            buffer[i] += delay[(delayIndex + 1) % delaySize] * 1.0;
+            delayIndex++;
         }
         
-        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
-            printf( "Issue streaming end of delay!\n" );
-            Pa_StopStream( stream );
-            Pa_CloseStream( stream );
-            Pa_Terminate();
-            return 5;
-        }
+//        for ( int i = 0; i < bufferSize; ++i ) {
+//            if ( count != bufferSize && i >= count ) {
+//                buffer[ i ] = 0;
+//            }
+//            
+//            delay[ delayIndex ] = buffer[ i ] + feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+//            buffer[ i ] += delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+//            delayIndex = ( delayIndex + 1 ) % delaySize;
+//        }
+//        
+        Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels );
         
-    } while ( average( delay, delaySize ) > 0.00001 );
+//        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
+//            printf( "Issue streaming data!\n" );
+//            Pa_StopStream( stream );
+//            Pa_CloseStream( stream );
+//            Pa_Terminate();
+//            return 5;
+//        }
+        
+    } while ( count != 0 || average( delay, delaySize ) > 0.00001 );
+    
+//    do {
+//        
+//        for ( int i = 0; i < bufferSize; ++i ){
+//            
+//            delay[ delayIndex ] = feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+//            buffer[ i ] = delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+//            delayIndex = ( delayIndex + 1 ) % delaySize;
+//            
+//        }
+//        
+//        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
+//            printf( "Issue streaming end of delay!\n" );
+//            Pa_StopStream( stream );
+//            Pa_CloseStream( stream );
+//            Pa_Terminate();
+//            return 5;
+//        }
+//        
+//    } while ( average( delay, delaySize ) > 0.00001 );
     
     
     
@@ -136,5 +155,8 @@ int main(int argc, const char * argv[]) {
     
     return 0;
 }
+
+
+
 
 
