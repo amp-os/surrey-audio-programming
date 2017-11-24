@@ -1,3 +1,176 @@
+//#include <stdio.h>
+//
+//#include <stdlib.h>
+//
+//#include <sndfile.h>
+//
+//#include <math.h>
+//
+//#include <portaudio.h>
+//
+//
+//
+//#define bufSize 128
+//
+//
+//
+//typedef float audioBuffer[bufSize];
+//
+//
+//
+//int main(int argc, const char* argv[])
+//
+//{
+//
+//    const char* sourcePath;
+//
+//
+//
+//    if (argc == 2)
+//
+//    {
+//
+//        sourcePath = argv[1];
+//
+//    }
+//
+//
+//
+//    audioBuffer buffer = {0};
+//
+//
+//
+//    SF_INFO sourceInfo;
+//
+//    SNDFILE* source = sf_open(sourcePath, SFM_READ, &sourceInfo);
+//
+//
+//
+//    Pa_Initialize();
+//
+//    PaStream* outputStream;
+//
+//    Pa_OpenDefaultStream(&outputStream, sourceInfo.channels, sourceInfo.channels, paFloat32, sourceInfo.samplerate, bufSize, NULL, NULL);
+//
+//    Pa_StartStream(outputStream);
+//
+//
+//
+//    int delayInMs = 0;
+//
+//
+//
+//    printf("input the delay time in milliseconds: ");
+//
+//
+//
+//    if (scanf("%i", &delayInMs) != 1)
+//
+//    {
+//
+//        exit(2);
+//
+//    }
+//
+//
+//
+//    //int sampleDelay = delayInMs  * (sourceInfo.samplerate / 1000) + 1;
+//
+//    int sampleDelay = 20001;
+//
+//    float* delayLine = calloc (sampleDelay, sizeof (float));
+//
+//
+//
+//
+//
+//    sf_count_t counter = bufSize;
+//
+//    int delayCounter = 0;
+//
+//
+//
+//    float averageLevel = 0;
+//
+//    float threshold = 0.000001;
+//
+//
+//
+//    do
+//
+//    {
+//
+//        counter = sf_read_float(source, buffer, bufSize);
+//
+//
+//
+//        for (int i = 0; i < bufSize; i++)
+//
+//        {
+//
+//            if (counter != bufSize && i >= counter)
+//
+//            {
+//
+//                buffer[i] = 0;
+//
+//            }
+//
+//
+//
+//            delayLine[delayCounter % sampleDelay] = buffer[i] + delayLine[(delayCounter + 1) % sampleDelay] * 0.8;
+//
+//            buffer[i] += delayLine[(delayCounter + 1) % sampleDelay] * 1.0;
+//
+//            delayCounter++;
+//
+//        }
+//
+//
+//
+//        averageLevel = 0;
+//
+//        for (int i = 0; i < sampleDelay; i++)
+//
+//        {
+//
+//            averageLevel += fabs (delayLine[i]);
+//
+//        }
+//
+//        averageLevel /= (float) sampleDelay;
+//
+//
+//
+//        Pa_WriteStream(outputStream, buffer, bufSize);
+//
+//    }
+//
+//    while(counter != 0 || averageLevel > threshold);
+//
+//
+//
+//    sf_close(source);
+//
+//
+//
+//    Pa_StopStream(outputStream);
+//
+//    Pa_CloseStream(outputStream);
+//
+//    Pa_Terminate();
+//
+//    return 0;
+//
+//}
+
+
+
+
+
+
+
+
 //
 //  main.c
 //  AudioFiles
@@ -13,7 +186,7 @@
 #include <math.h>
 
 double average( float *buffer, int count ) {
-    float total = 0;
+    double total = 0.0;
     for (int i = 0; i < count; ++i ){
         total += fabs( buffer[ i ] );
     }
@@ -65,39 +238,25 @@ int main(int argc, const char * argv[]) {
     do {
         
         count = sf_read_float( inputFile, buffer, bufferSize );
-
         
-        for (int i = 0; i < bufferSize; i++)
-        {
-            if (count != bufferSize && i >= count)
-            {
-                buffer[i] = 0;
+        for ( int i = 0; i < bufferSize; ++i ) {
+            if ( count != bufferSize && i >= count ) {
+                buffer[ i ] = 0;
             }
             
-            delay[delayIndex % delaySize] = buffer[i] + delay[(delayIndex + 1) % delaySize] * 0.8;
-            buffer[i] += delay[(delayIndex + 1) % delaySize] * 1.0;
-            delayIndex++;
+            delay[ delayIndex ] = buffer[ i ] + feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+            buffer[ i ] += delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+            delayIndex = ( delayIndex + 1 ) % delaySize;
         }
+
         
-//        for ( int i = 0; i < bufferSize; ++i ) {
-//            if ( count != bufferSize && i >= count ) {
-//                buffer[ i ] = 0;
-//            }
-//            
-//            delay[ delayIndex ] = buffer[ i ] + feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-//            buffer[ i ] += delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-//            delayIndex = ( delayIndex + 1 ) % delaySize;
-//        }
-//        
-        Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels );
-        
-//        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
-//            printf( "Issue streaming data!\n" );
-//            Pa_StopStream( stream );
-//            Pa_CloseStream( stream );
-//            Pa_Terminate();
-//            return 5;
-//        }
+        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
+            printf( "Issue streaming data!\n" );
+            Pa_StopStream( stream );
+            Pa_CloseStream( stream );
+            Pa_Terminate();
+            return 5;
+        }
         
     } while ( count != 0 || average( delay, delaySize ) > 0.00001 );
     
