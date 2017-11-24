@@ -12,22 +12,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-double movingAverage( float sample ) {
-    const int window = 100;
-    static float buffer[ window ] = {0.5};
-    static int count = 0;
+double average( float *buffer, int count ) {
     float total = 0;
-    
-    
-    buffer[ count ] = fabs( sample );
-    
-    for ( int i = 0; i < window; ++i ) {
-        total += buffer[ i ];
+    for (int i = 0; i < count; ++i ){
+        total += fabs( buffer[ i ] );
     }
-    
-    count = ( count + 1 ) % window;
-    
-    return total / window;
+    return (double) total / count;
 }
 
 int main(int argc, const char * argv[]) {
@@ -92,29 +82,25 @@ int main(int argc, const char * argv[]) {
         
     } while ( count != 0 );
     
-    float avg = 0;
-    
     do {
         
-        for ( int i = 0; i < delaySize; ++i ){
+        for ( int i = 0; i < bufferSize; ++i ){
         
-            buffer[ i % bufferSize ] = delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
-            
-            if ( i % bufferSize == 0 ) {
-                if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
-                    printf( "Issue streaming end of delay!\n" );
-                    Pa_StopStream( stream );
-                    Pa_CloseStream( stream );
-                    Pa_Terminate();
-                    return 5;
-                }
-            }
-            
-            avg = movingAverage( delay[ i ] );
-            delay[ delayIndex ] = feedback * delay[ delayIndex ];
+            buffer[ i ] = delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
+            delay[ delayIndex ] = feedback * delay[ ( delayIndex + inputInfo.channels ) % delaySize ];
             delayIndex = ( delayIndex + 1 ) % delaySize;
+            
         }
-    } while ( avg > 0.00001 );
+        
+        if ( Pa_WriteStream( stream, buffer, bufferSize / inputInfo.channels ) != paNoError ) {
+            printf( "Issue streaming end of delay!\n" );
+            Pa_StopStream( stream );
+            Pa_CloseStream( stream );
+            Pa_Terminate();
+            return 5;
+        }
+        
+    } while ( average( delay, delaySize ) > 0.00001 );
     
     
     
